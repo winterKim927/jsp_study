@@ -1,0 +1,10 @@
+<%@page import="news.repository.CommentsDAO"%>
+<%@ page contentType="text/html;charset=utf-8"%>
+<%! 
+	CommentsDAO dao = new CommentsDAO();
+%>
+<%
+	int idx = Integer.parseInt(request.getParameter("comments_idx"));
+	System.out.println("넘어온 idx는 " + idx);
+	out.print("넘기기 성공 " + idx);
+%>

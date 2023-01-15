@@ -1,0 +1,8 @@
+<%@page import="news.repository.CommentsDAO"%>
+<%@ page contentType="text/html;charset=utf-8""%>
+<%! 
+	CommentsDAO dao = new CommentsDAO();
+%>
+<%
+	
+%>

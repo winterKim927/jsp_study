@@ -1,0 +1,12 @@
+<%@page import="news.domain.Comments"%>
+<%@page import="java.util.List"%>
+<%@page import="news.repository.CommentsDAO"%>
+<%@ page language="java" contentType="text/html;charset=utf-8" %>
+<%! CommentsDAO dao = new CommentsDAO(); %>
+<%
+	request.setCharacterEncoding("utf-8");
+	String msg = request.getParameter("msg");
+	String author = request.getParameter("author");
+	int news_idx = Integer.parseInt(request.getParameter("news_idx"));
+	out.print(msg);
+%>

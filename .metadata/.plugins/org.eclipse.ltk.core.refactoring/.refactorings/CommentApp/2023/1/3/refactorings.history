@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;CommentApp/src/main/webapp/news/registComment.jsp&apos; to &apos;registComments.jsp&apos;" description="Rename resource &apos;registComment.jsp&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/main/webapp/news/registComment.jsp" name="registComments.jsp" stamp="1673782472190" updateReferences="true"/>
+</session>
