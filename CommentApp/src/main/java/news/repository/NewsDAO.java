@@ -1,6 +1,7 @@
 package news.repository;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -25,6 +26,13 @@ public class NewsDAO {
 		return list;
 	}
 	
+	public List selectByKeyword(Map map) {
+		SqlSession session = config.getSqlSession();
+		List list = session.selectList("selectByKeyword", map);
+		config.release(session);
+		return list;
+	}
+	
 	public News select(int news_idx) {
 		SqlSession session = config.getSqlSession();
 		News news = session.selectOne("News.select", news_idx);
@@ -43,6 +51,14 @@ public class NewsDAO {
 	public int delete(int news_idx) {
 		SqlSession session = config.getSqlSession();
 		int result = session.delete("News.delete", news_idx);
+		session.commit();
+		config.release(session);
+		return result;
+	}
+	
+	public int updateHit(int news_idx) {
+		SqlSession session = config.getSqlSession();
+		int result = session.update("News.updateHit", news_idx);
 		session.commit();
 		config.release(session);
 		return result;

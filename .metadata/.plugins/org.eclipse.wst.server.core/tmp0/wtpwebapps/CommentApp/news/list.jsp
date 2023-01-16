@@ -20,11 +20,32 @@ int num = pm.getNum();
 <title>탱고뉴스!</title>
 <%@ include file="/inc/header_link.jsp"%>
 <script type="text/javascript">
+
+	function search() {
+		let json = {
+			"category" : $("#category").val(),
+			"keyword" : $("#keyword").val()
+		}
+		$.ajax({
+			type : "post",
+			url : "search_list.jsp",
+			data : json,
+			success : function(result, status, xhr) {
+				searchList = JSON.parse(result);
+				console.log(searchList);
+			}
+		});
+	}
+
 	$(function() {
-		$("button").click(function() {
+		$("#writeNews").click(function() {
 			location.href="/news/write.jsp";
 		});
-	})
+		
+		$("#bt_search").click(function() {
+			search();
+		});
+	});
 </script>
 </head>
 <body>
@@ -81,11 +102,21 @@ int num = pm.getNum();
 				</tr>
 				<tr>
 					<td colspan="5">
-						<button type="button" class="btn btn-warning">글쓰기</button>
+						<button type="button" class="btn btn-warning" id="writeNews">글쓰기</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
+		<div class="row" style="float: right">
+			<div class="input-group mb-3">
+				<select class="input-group-text" id="category">
+					<option value="title">제목</option>
+					<option value="writer">작성자</option>
+				</select>
+				<input type="text" style="width:300px" class="form-control" id="keyword">
+				<button class="btn btn-warning" id="bt_search">검색</button>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

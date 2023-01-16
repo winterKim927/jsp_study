@@ -1,0 +1,21 @@
+<%@page import="com.google.gson.Gson"%>
+<%@page import="org.apache.ibatis.reflection.SystemMetaObject"%>
+<%@page import="news.domain.News"%>
+<%@page import="java.util.List"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="news.repository.NewsDAO"%>
+<%@ page contentType="text/html;charset=utf-8"%>
+<%! NewsDAO dao = new NewsDAO(); %>
+<%
+	String category = request.getParameter("category");
+	String keyword = request.getParameter("keyword");
+	System.out.println(category);
+	System.out.println(keyword);
+	HashMap map = new HashMap();
+	map.put("category", category);
+	map.put("keyword", keyword);
+	List<News> list = dao.selectByKeyword(map);
+	Gson gson = new Gson();
+	String json = gson.toJson(list);
+	out.print(json);
+%>

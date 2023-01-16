@@ -20,7 +20,7 @@
 			ofType="Comments" 
 			select="Comments.selectAllByFkey"/>
 	</resultMap>
-
+	
 	<insert id="insert" parameterType="News">
 		insert into news(news_idx, title, writer, content)
 		 values(seq_news.nextval, #{title}, #{writer}, #{content})
@@ -29,6 +29,10 @@
 	<select id="selectAll" resultMap="newsMap">
 		select * from news order by news_idx desc
 	</select>
+
+	<select id="selectByKeyword" parameterType="java.util.Map" resultMap="newsMap">
+		select * from news where ${category} like '%${keyword}%'
+	</select>
 	
 	<select id="select" parameterType="int" resultMap="newsMap">
 		select * from news where news_idx = #{news_idx}
@@ -36,6 +40,11 @@
 	
 	<update id="update" parameterType="News">
 		update news set title=#{title}, writer=#{writer}, content=#{content}
+		 where news_idx = #{news_idx}
+	</update>
+
+	<update id="updateHit" parameterType="int">
+		update news set hit=hit+1
 		 where news_idx = #{news_idx}
 	</update>
 	

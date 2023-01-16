@@ -10,6 +10,7 @@
 <%! PagingManager pm = new PagingManager(); %>
 <%
 int news_idx = Integer.parseInt(request.getParameter("news_idx")); 
+dao.updateHit(news_idx);
 News news = dao.select(news_idx);
 List<Comments> list = cdao.selectAllByFkey(news_idx);
 pm.init(list, request);
@@ -21,6 +22,21 @@ pm.init(list, request);
 <%@ include file="/inc/header_link.jsp"%>
 <title>뉴스내용</title>
 <script type="text/javascript">
+
+	let showCommentsList = function(result) {
+		let cmList = JSON.parse(result);
+		let innerhtml = "";
+		for(let i = 0; i < cmList.length; i++){
+			let cm = cmList[i];
+			innerhtml += "<tr name='test'>";
+			innerhtml += "<td class='col-5' name='gMsg'>"+cm.msg+"</td>";
+			innerhtml += "<td class='col-1' name='gAuthor'>"+cm.author+"</td>";
+			innerhtml += "<td class='col-2' name='gWritedate'>"+cm.writedate.substring(0,19)+"</td>";
+			innerhtml += "<td class='col-1'><button type='button' class='btn btn-danger btn-sm' name='comDel' style='display:none' value='"+cm.comments_idx+"' onclick='del(this.value);'>삭제</button></td>";
+			innerhtml += "</tr>";
+		}
+		$("#commentsList").html(innerhtml);
+	}
 
 	function addBt(){
 		for(let i=0; i<$("tr[name='test']").length; i++ ){
@@ -35,57 +51,42 @@ pm.init(list, request);
 	}
 
 	function getComments() {
-		let xhttp = new XMLHttpRequest();
 		let idx = $("input[name='news_idx']").val();
-		xhttp.open("GET", "getComments.jsp?news_idx=" + idx);
-		xhttp.onreadystatechange = function() {
-			console.log("이건 작동 하나?");
-			if(this.readyState == 4 && this.status == 200){
-				console.log("진입함", idx);
-				let cmList = JSON.parse(this.responseText);
-				let innerhtml = "";
-				for(let i = 0; i < cmList.length; i++){
-					let cm = cmList[i];
-					innerhtml += "<tr name='test'>";
-					innerhtml += "<td class='col-5' name='gMsg'>"+cm.msg+"</td>";
-					innerhtml += "<td class='col-1' name='gAuthor'>"+cm.author+"</td>";
-					innerhtml += "<td class='col-2' name='gWritedate'>"+cm.writedate+"</td>";
-					innerhtml += "<td class='col-1'><button type='button' class='btn btn-danger btn-sm' name='comDel' style='display:none' value='"+cm.comments_idx+"' onclick='del(this.value);'>삭제</button></td>";
-					innerhtml += "</tr>";
-				}
-				$("#commentsList").html(innerhtml);
+		$.ajax({
+			type : "GET",
+			url : "getComments.jsp?news_idx=" + idx,
+			success : function(result, status, xhr) {
+				showCommentsList(result);
 				addBt();
-			}
-		}
-		xhttp.send();
+			}				
+		});
+		
 	}
 
 	function del(comments_idx) {
-		let xhttp = new XMLHttpRequest();
-		xhttp.open("GET","delete_com.jsp?comments_idx="+comments_idx);
-		xhttp.onreadystatechange =function() {
-			if(this.readyState == 4 && this.status == 200){
-				console.log(this.responseText);
+		if(!confirm("댓글을 삭제할까요?")) return;
+		$.ajax({
+			type : "get",
+			url : "delete_com.jsp?comments_idx="+comments_idx,
+			success : function(result, status, xhr) {
 				getComments();
-			}
-		};
-		xhttp.send();
+			}					
+		});
 	}
 	
  	function registComments() {
-		let xhttp = new XMLHttpRequest();
-		xhttp.open("POST", "/news/registComments.jsp");
-		xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		let data = "msg="+$("input[name='msg']").val();
-		data+= "&author="+$("input[name='author']").val();
-		data+= "&news_idx="+$("input[name='news_idx']").val();;
-		xhttp.onreadystatechange = function() {
-			console.log("ready state is " + this.readyState);
-			if(this.readyState == 4 && this.status == 200){
-				getComments();
+ 		$.ajax({
+ 			type : "post",
+ 			url : "registComments.jsp",
+ 			data : {
+ 			 	msg : $("input[name='msg']").val(),
+ 				author : $("input[name='author']").val(),
+ 				news_idx : $("input[name='news_idx']").val() 
+ 			},
+ 			success : function(result, status, xhr) {
+ 				getComments();
 			}
-		}
-		xhttp.send(data);
+ 		});
 	} 
 
 	$(function() {
@@ -100,7 +101,7 @@ pm.init(list, request);
 		});
 		
 		$($("button")[1]).click(function() { //삭제버튼
-			if(confirm("삭제할까요?")){
+			if(confirm("게시물을 삭제할까요?")){
 				$("#form1").attr({
 					"action" : "/news/delete",
 					"method" : "post"
@@ -114,16 +115,8 @@ pm.init(list, request);
 		});
 		
 		$("#form2 button").click(function() {//댓글등록버튼
-			/*  $("#form2").attr({
-				"action" : "/comments/regist",
-				"method" : "post"
-			});
-			$("#form2").submit();  */
 			registComments();
 		});
-		
-		
-		
 	});
 </script>
 </head>
@@ -176,20 +169,6 @@ pm.init(list, request);
 			      </tr>
 			    </thead>
 			    <tbody id="commentsList">
-			    	<%-- <%for(int i=0; i<list.size();i++){
-			    			Comments c = list.get(i);
-			    	%>
-			      <tr name="test">
-			        <td class="col-5" name="gMsg"><%=c.getMsg()%></td>
-			        <td class="col-1" name="gAuthor"><%=c.getAuthor()%></td>
-			        <td class="col-2" name="gWritedate"><%=c.getWritedate()%></td>
-			        <td class="col-1">
-			        <form id="form3">
-			        	<button type="button" class="btn btn-danger btn-sm" name="comDel" style="display:none" value="<%=c.getComments_idx()%>" onclick="del(this.value);">삭제</button>
-			        </form>	
-		        	</td>
-			      </tr>
-			      <%}%> --%>
 			    </tbody>
 	  		</table>
   		

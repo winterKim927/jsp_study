@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <items>
 	<item id="scriptSelectorViewer">
-		<column name="Script" visible="true" order="0" width="137"/>
-		<column name="Time" visible="true" order="1" width="197"/>
-		<column name="Info" visible="true" order="2" width="82"/>
-		<column name="Folder" visible="true" order="3" width="94"/>
+		<column name="Script" visible="true" order="0" width="146"/>
+		<column name="Time" visible="true" order="1" width="194"/>
+		<column name="Info" visible="true" order="2" width="79"/>
+		<column name="Folder" visible="true" order="3" width="91"/>
 	</item>
 </items>
